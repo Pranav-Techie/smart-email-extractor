@@ -1,0 +1,38 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# --- Virtual environment ---
+venv/
+.env/
+ENV/
+env/
+.venv/
+
+# --- IDE / Editor files ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- macOS system files ---
+.DS_Store
+
+# --- Logs and temporary files ---
+*.log
+*.tmp
+*.bak
+
+# --- Compiled files ---
+build/
+dist/
+*.egg-info/
+
+# --- Jupyter Notebooks checkpoints ---
+.ipynb_checkpoints/
+
+# --- CSV or output files ---
+leads.csv
