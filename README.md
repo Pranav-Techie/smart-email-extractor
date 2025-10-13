@@ -4,7 +4,7 @@ A simple Python tool that extracts emails from a website, validates them, scores
 
 ---
 
-## 🚀 Features
+##  Features
 - Extracts all visible emails from a website.
 - Validates emails using domain (MX record check).
 - Scores email quality based on:
@@ -16,7 +16,7 @@ A simple Python tool that extracts emails from a website, validates them, scores
 
 ---
 
-## 🧰 Tech Stack
+##  Tech Stack
 - Python 3
 - Libraries: `requests`, `beautifulsoup4`, `tldextract`, `dnspython`
 
