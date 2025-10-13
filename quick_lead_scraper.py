@@ -6,7 +6,7 @@ import tldextract
 from bs4 import BeautifulSoup
 import dns.resolver
 
-# Regex to find email addresses
+# Expression to match email addresses
 EMAIL_RE = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}', re.IGNORECASE)
 
 
@@ -16,7 +16,7 @@ def find_emails_from_html(html):
     text = soup.get_text(" ")
     emails = set(EMAIL_RE.findall(text))
 
-    # also extract from mailto: links
+    
     for a in soup.find_all("a", href=True):
         if a['href'].startswith("mailto:"):
             email = a['href'].split("mailto:")[1].split("?")[0]
@@ -70,10 +70,10 @@ def scrape_domain(seed_url, max_pages=10, delay=1.0):
     try:
         domain = tldextract.extract(seed_url).registered_domain
         if not domain:
-            print("⚠️ Invalid domain.")
+            print("Invalid domain.")
             return []
     except Exception as e:
-        print(f"❌ Domain extraction failed: {e}")
+        print(f" Domain extraction failed: {e}")
         return []
 
     visited, to_visit, results = set(), {seed_url}, []
@@ -89,16 +89,16 @@ def scrape_domain(seed_url, max_pages=10, delay=1.0):
             if "text/html" not in r.headers.get("Content-Type", ""):
                 continue
         except Exception as e:
-            print(f"⚠️ Skipping {url}: {e}")
+            print(f" Skipping {url}: {e}")
             continue
 
-        # Extract and validate emails
+        # Extracting  and validating emails
         emails = find_emails_from_html(r.text)
         for e in emails:
             status, score = validate_and_score(e, domain)
             results.append({"email": e, "source": url, "status": status, "score": score})
 
-        # Find internal links for further crawling
+    
         soup = BeautifulSoup(r.text, "html.parser")
         for a in soup.find_all("a", href=True):
             link = a['href']
@@ -109,21 +109,21 @@ def scrape_domain(seed_url, max_pages=10, delay=1.0):
 
         time.sleep(delay)
 
-    # Remove duplicates (keep highest score)
+   
     clean = {}
     for r in results:
         e = r['email'].lower()
         if e not in clean or r['score'] > clean[e]['score']:
             clean[e] = r
 
-    print(f"✅ Scraped results: {list(clean.values())}")
+    print(f" Scraped results: {list(clean.values())}")
     return list(clean.values())
 
 
 def save_csv(rows, filename="leads.csv"):
     """Save the results to a CSV file."""
     if not rows:
-        print("⚠️ No data to save.")
+        print(" No data to save.")
         return
 
     keys = ["email", "source", "status", "score"]
@@ -139,4 +139,4 @@ if __name__ == "__main__":
     seed = input("Enter website URL (e.g., https://example.com): ").strip()
     rows = scrape_domain(seed)
     save_csv(rows)
-    print(f"✅ Done! Found {len(rows)} emails.")
+    print(f" Done! Found {len(rows)} emails.")

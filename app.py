@@ -4,26 +4,26 @@ import os
 
 app = Flask(__name__)
 
-# 🏠 Home page — loads templates/index.html
+# Home page using index.html
 @app.route("/")
 def home():
     return render_template("index.html")
 
-# 📨 Scrape route — runs your scraper logic
+# Scrape route logic
 @app.route("/scrape", methods=["POST"])
 def scrape():
     url = request.form.get("url")
     if not url:
         return jsonify({"error": "Missing URL"}), 400
     
-    # Run the scraper
-    rows = scrape_domain(url)
-    save_csv(rows)  # Save results to leads.csv
     
-    # Return results as JSON
+    rows = scrape_domain(url)
+    save_csv(rows)  # Saving  results to leads.csv
+    
+    
     return jsonify({"emails": rows})
 
-# 💾 Route to download the CSV file
+# Route to download the CSV file
 @app.route("/download")
 def download_csv():
     filepath = "leads.csv"

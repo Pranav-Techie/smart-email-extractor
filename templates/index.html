@@ -33,13 +33,13 @@
 
             const data = await res.json();
             if (data.error) {
-                document.getElementById('emails').innerText = "❌ " + data.error;
+                document.getElementById('emails').innerText = "" + data.error;
             } else if (data.emails && data.emails.length > 0) {
                 document.getElementById('emails').innerText = 
                     data.emails.map(e => `${e.email} (score: ${e.score})`).join("\n");
                 document.getElementById('download').style.display = "inline-block";
             } else {
-                document.getElementById('emails').innerText = "⚠️ No emails found.";
+                document.getElementById('emails').innerText = " No emails found.";
             }
         };
     </script>

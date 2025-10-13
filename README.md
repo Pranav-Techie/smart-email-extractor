@@ -25,7 +25,7 @@ A simple Python tool that extracts emails from a website, validates them, scores
 ## ⚙️ Setup & Run
 
 ```bash
-git clone https://github.com/yourusername/smart-email-extractor.git
+git clone https://github.com/Pranav-Techie/smart-email-extractor
 cd smart-email-extractor
 pip install -r requirements.txt
 python quick_lead_scraper.py
