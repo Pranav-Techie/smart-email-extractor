@@ -1,0 +1,3 @@
+email,source,status,score
+jobs@python.org,https://python.org/jobs/,mx-ok,6
+b@c.com,https://docs.python.org/release/3.8.4/whatsnew/changelog.html#changelog,syntax-ok,2

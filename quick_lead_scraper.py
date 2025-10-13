@@ -1,12 +1,14 @@
 import re
 import csv
 import time
+import os
 import requests
 import tldextract
 from bs4 import BeautifulSoup
 import dns.resolver
+from datetime import datetime
 
-# Expression to match email addresses
+# Regex to find email addresses
 EMAIL_RE = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}', re.IGNORECASE)
 
 
@@ -16,7 +18,7 @@ def find_emails_from_html(html):
     text = soup.get_text(" ")
     emails = set(EMAIL_RE.findall(text))
 
-    
+    # also extract from mailto: links
     for a in soup.find_all("a", href=True):
         if a['href'].startswith("mailto:"):
             email = a['href'].split("mailto:")[1].split("?")[0]
@@ -63,19 +65,9 @@ def validate_and_score(email, target_domain):
     return status, score
 
 
-def scrape_domain(seed_url, max_pages=10, delay=1.0):
+def scrape_domain(seed_url, max_pages=20, delay=1.0):
     """Crawl pages under same domain and collect emails."""
-    print(f"🔍 Starting scrape for: {seed_url}")
-
-    try:
-        domain = tldextract.extract(seed_url).registered_domain
-        if not domain:
-            print("Invalid domain.")
-            return []
-    except Exception as e:
-        print(f" Domain extraction failed: {e}")
-        return []
-
+    domain = tldextract.extract(seed_url).registered_domain
     visited, to_visit, results = set(), {seed_url}, []
 
     while to_visit and len(visited) < max_pages:
@@ -85,58 +77,62 @@ def scrape_domain(seed_url, max_pages=10, delay=1.0):
         visited.add(url)
 
         try:
-            r = requests.get(url, timeout=10, headers={"User-Agent": "SmartEmailBot/1.0"})
+            r = requests.get(url, timeout=10, headers={"User-Agent": "SmartLeadScraper/1.0"})
             if "text/html" not in r.headers.get("Content-Type", ""):
                 continue
-        except Exception as e:
-            print(f" Skipping {url}: {e}")
+        except Exception:
             continue
 
-        # Extracting  and validating emails
+        # Extract and validate emails
         emails = find_emails_from_html(r.text)
         for e in emails:
             status, score = validate_and_score(e, domain)
             results.append({"email": e, "source": url, "status": status, "score": score})
 
-    
+        # Find internal links for further crawling
         soup = BeautifulSoup(r.text, "html.parser")
         for a in soup.find_all("a", href=True):
             link = a['href']
             if link.startswith("/"):
                 link = requests.compat.urljoin(seed_url, link)
-            if link.startswith("http") and domain in link and link not in visited:
+            if link.startswith("http") and tldextract.extract(link).registered_domain == domain:
                 to_visit.add(link)
 
         time.sleep(delay)
 
-   
+    # Remove duplicates (keep highest score)
     clean = {}
     for r in results:
         e = r['email'].lower()
         if e not in clean or r['score'] > clean[e]['score']:
             clean[e] = r
 
-    print(f" Scraped results: {list(clean.values())}")
     return list(clean.values())
 
 
-def save_csv(rows, filename="leads.csv"):
-    """Save the results to a CSV file."""
+def save_csv(rows, out_dir="."):
+    """Save the results to a timestamped CSV file and return the filename."""
     if not rows:
-        print(" No data to save.")
-        return
+        return None
 
     keys = ["email", "source", "status", "score"]
-    with open(filename, "w", newline="", encoding="utf-8") as f:
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"leads_{timestamp}.csv"
+
+    os.makedirs(out_dir, exist_ok=True)
+    path = os.path.join(out_dir, filename)
+
+    with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=keys)
         writer.writeheader()
         writer.writerows(rows)
 
-    print(f"💾 Saved {len(rows)} emails to {filename}")
+    print(f"✅ Results saved in {path}")
+    return filename
 
 
 if __name__ == "__main__":
     seed = input("Enter website URL (e.g., https://example.com): ").strip()
     rows = scrape_domain(seed)
-    save_csv(rows)
-    print(f" Done! Found {len(rows)} emails.")
+    filename = save_csv(rows)
+    print(f"✅ Done! Found {len(rows)} emails. Saved to {filename}")

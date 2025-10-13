@@ -1,31 +1,46 @@
-# 📨 Smart Email Extractor & Validator
+# Smart Email Extractor
 
-A simple Python tool that extracts emails from a website, validates them, scores their quality, and saves the results to a CSV file.
-
----
-
-##  Features
-- Extracts all visible emails from a website.
-- Validates emails using domain (MX record check).
-- Scores email quality based on:
-  - Domain match
-  - Non-generic address (not info@, admin@, etc.)
-  - MX record presence
-- Removes duplicates automatically.
-- Exports clean results to `leads.csv`.
+**Author:** Pranav Kumar Jha  
+**GitHub Repository:** [Smart Email Extractor](https://github.com/Pranav-Techie/smart-email-extractor)
 
 ---
 
-##  Tech Stack
-- Python 3
-- Libraries: `requests`, `beautifulsoup4`, `tldextract`, `dnspython`
+## Overview
+
+Smart Email Extractor is a Python-based web application that scrapes websites to find valid email addresses intelligently.  
+It includes:
+- A Flask-based web interface.
+- A REST API endpoint for programmatic access.
+- Email validation and scoring.
+- CSV export of extracted leads.
+
+This tool helps marketers, researchers, and developers automate lead extraction from websites securely and efficiently.
 
 ---
 
-## ⚙️ Setup & Run
+## Features
 
+ Extracts emails from any given domain.  
+ Validates email format and checks for MX records.  
+ Assigns quality scores based on reliability.  
+ Exports results to CSV automatically.  
+ REST API for external integrations.  
+ Includes a Jupyter Notebook API demonstration.
+
+---
+
+## Tech Stack
+
+- **Backend:** Python, Flask  
+- **Frontend:** HTML, Jinja2  
+- **Libraries:** BeautifulSoup4, Requests, dnspython, tldextract, flask-cors  
+- **API Testing:** Jupyter Notebook / Postman
+
+---
+
+##  Setup Instructions
+
+### 1 Clone the Repository
 ```bash
-git clone https://github.com/Pranav-Techie/smart-email-extractor
+git clone https://github.com/Pranav-Techie/smart-email-extractor.git
 cd smart-email-extractor
-pip install -r requirements.txt
-python quick_lead_scraper.py
